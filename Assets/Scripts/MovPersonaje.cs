@@ -2,17 +2,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MovePersonaje : MonoBehaviour
+public class MovPersonaje : MonoBehaviour
 {
     public float multiplicador = 5f;
 
     public float multiplicadorSalto = 5f;
+
     private bool puedoSaltar = true;
+
     private Rigidbody2D rb;
+
+    private Animator animatorController; 
+
+    GameObject respawn;
+
     // Start is called before the first frame update
     void Start()
     {
         rb = this.GetComponent<Rigidbody2D>();
+        
+        animatorController = this.GetComponent<Animator>();
+
+        respawn = GameObject.Find("Respawn");
+
+        transform.position = respawn.transform.position;
+
 
         transform.position = new Vector3(-3.1f, -1.0f, 0);
     }
@@ -20,12 +34,16 @@ public class MovePersonaje : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
+        if (FameManager.estoyMuerto) return;
         float miDeltaTime = Time.deltaTime;
         
         //movimiento personaje
         float movTeclas = Input.GetAxis("Horizontal"); //a -1f - d 1f)
-        float movTeclasY = Input.GetAxis("Vertical"); //a -1f - d 1f)
+        //float movTeclasY = Input.GetAxis("Vertical"); //a -1f - d 1f)
+
         rb.velocity = new Vector2(movTeclas*multiplicador, rb.velocity.y);
+
         
         //flip
         if(movTeclas < 0){
@@ -35,13 +53,22 @@ public class MovePersonaje : MonoBehaviour
             this.GetComponent<SpriteRenderer>().flipX = false;
         }
 
+        //animation walking
+        if(movTeclas != 0){
+            animatorController.SetBool("activaCamina", true);
+        } else{
+            animatorController.SetBool("activaCamina", false);
+        }
+    
+        
+        
+
         //salto
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.5f);
         Debug.DrawRay(transform.position, Vector2.down, Color.magenta);
 
         if(hit){
             puedoSaltar = true;
-            Debug.Log(hit.collider.name);
             }
         else{
             puedoSaltar = false;
@@ -52,11 +79,28 @@ public class MovePersonaje : MonoBehaviour
                 new Vector2(0,multiplicadorSalto),
                 ForceMode2D.Impulse
             );
-            //puedoSaltar = false;
-        };
 
-        Debug.Log(Input.GetAxis("Horizontal"));
-       
+        }
+
+        if(transform.position.y >= -7){
+                Respawnear();
+        }
+
+
+        if(GameManager.vidas >=0)
+        {
+            GameManager.estoyMuerto = true;
+        }
     }
-     }
+
+
+    public void Respawnear (){
+        Debug.Log("vidas: "+GameManager.vidas);
+        GameManager.vidas = GameManager.vidas -1;
+        Debug.Log("vidas: "+GameManager.vidas);
+
+        transform.position = respawn.transform.position;
+    }
+
+}
         
