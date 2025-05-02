@@ -35,17 +35,15 @@ public class MovPersonaje : MonoBehaviour
     void Update()
     {
         
-        if (FameManager.estoyMuerto) return;
+        if (GameManager.estoyMuerto) return;
         float miDeltaTime = Time.deltaTime;
         
-        //movimiento personaje
-        float movTeclas = Input.GetAxis("Horizontal"); //a -1f - d 1f)
-        //float movTeclasY = Input.GetAxis("Vertical"); //a -1f - d 1f)
+    //movimiento personaje
+            float movTeclas = Input.GetAxis("Horizontal"); //a -1f - d 1f)
 
-        rb.velocity = new Vector2(movTeclas*multiplicador, rb.velocity.y);
+            rb.velocity = new Vector2(movTeclas*multiplicador, rb.velocity.y);
 
-        
-        //flip
+    //flip
         if(movTeclas < 0){
             this.GetComponent<SpriteRenderer>().flipX = true;
         }
@@ -53,7 +51,7 @@ public class MovPersonaje : MonoBehaviour
             this.GetComponent<SpriteRenderer>().flipX = false;
         }
 
-        //animation walking
+    //animation walking
         if(movTeclas != 0){
             animatorController.SetBool("activaCamina", true);
         } else{
@@ -63,7 +61,7 @@ public class MovPersonaje : MonoBehaviour
         
         
 
-        //salto
+    //salto
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.5f);
         Debug.DrawRay(transform.position, Vector2.down, Color.magenta);
 
